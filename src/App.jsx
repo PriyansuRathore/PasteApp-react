@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Home from "./components/Home";
 import Paste from "./components/Paste";
@@ -6,7 +6,7 @@ import ViewPaste from "./components/ViewPaste";
 import Navbar from "./components/Navbar";
 
 function App() {
-  // Keep dark mode state in App.jsx
+  // Dark mode state
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"
   );
@@ -21,10 +21,11 @@ function App() {
     }
   }, [darkMode]);
 
-  const router = createBrowserRouter([
-    { path: "/", element: <><Navbar /><Home /></> },
-    { path: "/pastes", element: <><Navbar /><Paste /></> },
-    { path: "/pastes/:id", element: <><Navbar /><ViewPaste /></> }
+  const router = createHashRouter([
+    { path: "/", element: <><Navbar /><Home darkMode={darkMode} /></> },
+    { path: "/pastes", element: <><Navbar /><Paste darkMode={darkMode} /></> },
+    { path: "/pastes/:id", element: <><Navbar /><ViewPaste darkMode={darkMode} /></> },
+    { path: "*", element: <><Navbar /><h1 className="text-center text-xl mt-10">Page Not Found</h1></> } // Fallback route
   ]);
 
   return (
