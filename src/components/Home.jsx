@@ -1,9 +1,9 @@
-import { Copy, PlusCircle } from "lucide-react";
+import { Copy, PlusCircle, Clock, Star, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { addToPastes, updatePastes } from "../redux/pasteSlice";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [value, setValue] = useState("");
@@ -21,6 +21,12 @@ const Home = () => {
   const pasteId = searchParams.get("pasteId");
   const pastes = useSelector((state) => state.paste.pastes);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  // Get recent pastes (last 5)
+  const recentPastes = pastes.slice(-5).reverse();
+  const totalPastes = pastes.length;
+  const favoritePastes = pastes.filter(paste => paste.isFavorite).length;
 
   const createPaste = () => {
     const paste = {
@@ -87,8 +93,75 @@ const Home = () => {
   }, [title, value, category]);
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 pt-16">
-      <div className="max-w-3xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+    <div className="w-full min-h-screen bg-gray-100 dark:bg-gray-900 pt-16">
+      {/* Welcome Section */}
+      {!pasteId && (
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Welcome to PasteShare 🚀
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+              Create, manage, and share your code snippets with ease
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="flex justify-center gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalPastes}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Pastes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{favoritePastes}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Favorites</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{recentPastes.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Recent</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Recent Pastes */}
+          {recentPastes.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Clock size={24} className="text-blue-500" />
+                Recent Pastes
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recentPastes.map((paste) => (
+                  <div
+                    key={paste._id}
+                    className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 dark:border-gray-700"
+                    onClick={() => navigate(`/pastes/${paste._id}`)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                        {paste.title}
+                      </h3>
+                      {paste.isFavorite && <Star className="text-yellow-400 fill-current" size={16} />}
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+                      {paste.content.substring(0, 100)}...
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">
+                        {paste.category}
+                      </span>
+                      <span>{new Date(paste.createdAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Paste Editor */}
+      <div className="max-w-3xl mx-auto px-6 pb-8">
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
         
         {/* Title Input & Category */}
         <div className="flex flex-col gap-4 mb-4">
@@ -154,6 +227,7 @@ const Home = () => {
             className="w-full h-64 p-3 border-none focus:outline-none bg-transparent dark:text-white"
             style={{ caretColor: "#000" }}
           />
+        </div>
         </div>
       </div>
     </div>
