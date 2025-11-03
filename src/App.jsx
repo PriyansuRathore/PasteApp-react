@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Paste from "./components/Paste";
 import ViewPaste from "./components/ViewPaste";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 function App() {
   // Dark mode state
@@ -22,10 +23,10 @@ function App() {
   }, [darkMode]);
 
   const router = createHashRouter([
-    { path: "/", element: <><Navbar /><Home darkMode={darkMode} /></> },
-    { path: "/pastes", element: <><Navbar /><Paste darkMode={darkMode} /></> },
-    { path: "/pastes/:id", element: <><Navbar /><ViewPaste darkMode={darkMode} /></> },
-    { path: "*", element: <><Navbar /><h1 className="text-center text-xl mt-10">Page Not Found</h1></> } // Fallback route
+    { path: "/", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><Home darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
+    { path: "/pastes", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><Paste darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
+    { path: "/pastes/:id", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><ViewPaste darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
+    { path: "*", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><h1 className="text-center text-xl mt-10">Page Not Found</h1><Footer darkMode={darkMode} /></> } // Fallback route
   ]);
 
   return (

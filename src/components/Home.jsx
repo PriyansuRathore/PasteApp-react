@@ -8,6 +8,15 @@ import { useSearchParams } from "react-router-dom";
 const Home = () => {
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("code");
+  
+  const categories = [
+    { value: "code", label: "💻 Code", color: "text-blue-500" },
+    { value: "notes", label: "📝 Notes", color: "text-green-500" },
+    { value: "config", label: "⚙️ Config", color: "text-purple-500" },
+    { value: "snippet", label: "✂️ Snippet", color: "text-orange-500" },
+    { value: "other", label: "📄 Other", color: "text-gray-500" }
+  ];
   const [searchParams, setSearchParams] = useSearchParams(); 
   const pasteId = searchParams.get("pasteId");
   const pastes = useSelector((state) => state.paste.pastes);
@@ -17,8 +26,12 @@ const Home = () => {
     const paste = {
       title: title,
       content: value,
+      category: category,
       _id: pasteId || Date.now().toString(36) + Math.random().toString(36).substring(2),
       createdAt: new Date().toISOString(),
+      isFavorite: false,
+      views: 0,
+      shares: 0
     };
 
     if (pasteId) {
@@ -50,24 +63,59 @@ const Home = () => {
     }
   }, [pasteId, pastes]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 's':
+            e.preventDefault();
+            createPaste();
+            break;
+          case 'n':
+            e.preventDefault();
+            resetPaste();
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [title, value, category]);
+
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+    <div className="w-full min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 pt-16">
       <div className="max-w-3xl w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
         
-        {/* Title Input & Buttons */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
-          <input
-            type="text"
-            placeholder="Enter title..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full md:w-3/4 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
-          />
+        {/* Title Input & Category */}
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              placeholder="Enter title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            />
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex gap-3">
             <button 
               className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md shadow-md transition"
               onClick={createPaste}
+              title={`${pasteId ? 'Update' : 'Create'} Paste (Ctrl+S)`}
             >
               {pasteId ? "Update Paste" : "Create Paste"}
             </button>
@@ -76,6 +124,7 @@ const Home = () => {
               <button 
                 className="bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-md shadow-md transition"
                 onClick={resetPaste}
+                title="New Paste (Ctrl+N)"
               >
                 <PlusCircle size={20} />
               </button>

@@ -1,7 +1,17 @@
 {
-  "name": "paste",
+  "name": "pasteshare-btech-project",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "PasteShare - Advanced Code Snippet Management System | BTech Final Year Project",
+  "author": "BTech CSE Student",
+  "keywords": [
+    "react",
+    "redux",
+    "tailwind",
+    "paste",
+    "code-sharing",
+    "btech-project"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +21,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",
-    "lucide-react": "^0.445.0",
+    "lucide-react": "^0.552.0",
+    "prismjs": "^1.30.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",

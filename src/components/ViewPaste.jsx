@@ -1,18 +1,48 @@
 import { Copy } from "lucide-react";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { incrementViews } from "../redux/pasteSlice";
+import Prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-json";
 
 const ViewPaste = () => {
   const { id } = useParams();
-  console.log(id);
-
+  const dispatch = useDispatch();
+  
   const pastes = useSelector((state) => state.paste.pastes);
   const paste = pastes.find((paste) => paste._id === id);
+  
+  // Track view when component mounts
+  useEffect(() => {
+    if (paste) {
+      dispatch(incrementViews(id));
+    }
+  }, [id, paste, dispatch]);
+
+  // Highlight syntax when component mounts
+  useEffect(() => {
+    Prism.highlightAll();
+  }, [paste]);
+
+  const detectLanguage = (content) => {
+    if (content.includes('function') || content.includes('const') || content.includes('let')) return 'javascript';
+    if (content.includes('def ') || content.includes('import ')) return 'python';
+    if (content.includes('public class') || content.includes('System.out')) return 'java';
+    if (content.includes('{') && content.includes(':')) return 'json';
+    if (content.includes('body') || content.includes('div')) return 'css';
+    return 'javascript';
+  };
 
   console.log("Paste->", paste);
   return (
-    <div className="w-full h-full py-10 max-w-[1200px] mx-auto px-5 lg:px-0 bg-[#0F172A] text-white">
+    <div className="w-full h-full py-10 max-w-[1200px] mx-auto px-5 lg:px-0 bg-[#0F172A] text-white pt-16">
       <div className="flex flex-col gap-y-5 items-start">
         <input
           type="text"
@@ -41,16 +71,15 @@ const ViewPaste = () => {
             </button>
           </div>
 
-          {/* TextArea */}
-          <textarea
-            value={paste.content}
-            disabled
-            placeholder="Write Your Content Here..."
-            className="w-full p-3 bg-transparent text-white border-none resize-none focus:ring-0"
-            style={{ caretColor: "#FFFFFF" }}
-            rows={20}
-          />
+          {/* Code Block with Syntax Highlighting */}
+          <pre className="w-full p-3 bg-transparent border-none resize-none focus:ring-0 overflow-auto">
+            <code className={`language-${detectLanguage(paste.content)} text-sm`}>
+              {paste.content}
+            </code>
+          </pre>
         </div>
+
+
       </div>
     </div>
   );

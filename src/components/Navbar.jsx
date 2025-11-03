@@ -1,25 +1,11 @@
 import { NavbarData } from "../data/Navbar";
 import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-const Navbar = () => {
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
+const Navbar = ({ darkMode, setDarkMode }) => {
 
   return (
-    <div className="w-full h-[50px] flex justify-between items-center px-6 p-4 bg-gray-900 dark:bg-gray-800 shadow-md fixed top-0">
+    <div className="w-full h-[50px] flex justify-between items-center px-6 p-4 bg-gray-900 dark:bg-gray-800 shadow-md fixed top-0 z-50">
       {/* Navbar Links */}
       <div className="flex gap-x-10">
         {NavbarData.map((link, idx) => (

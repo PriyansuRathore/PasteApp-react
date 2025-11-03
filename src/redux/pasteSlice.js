@@ -62,9 +62,43 @@ const pasteSlice = createSlice({
       // Update to localstorage
       localStorage.removeItem("pastes")
     },
+    incrementViews: (state, action) => {
+      const pasteId = action.payload
+      const index = state.pastes.findIndex((item) => item._id === pasteId)
+      
+      if (index >= 0) {
+        state.pastes[index].views = (state.pastes[index].views || 0) + 1
+        localStorage.setItem("pastes", JSON.stringify(state.pastes))
+      }
+    },
+    incrementShares: (state, action) => {
+      const pasteId = action.payload
+      const index = state.pastes.findIndex((item) => item._id === pasteId)
+      
+      if (index >= 0) {
+        state.pastes[index].shares = (state.pastes[index].shares || 0) + 1
+        localStorage.setItem("pastes", JSON.stringify(state.pastes))
+      }
+    },
+    toggleFavorite: (state, action) => {
+      const pasteId = action.payload
+      const index = state.pastes.findIndex((item) => item._id === pasteId)
+      
+      if (index >= 0) {
+        state.pastes[index].isFavorite = !state.pastes[index].isFavorite
+        localStorage.setItem("pastes", JSON.stringify(state.pastes))
+        toast.success(state.pastes[index].isFavorite ? "Added to favorites" : "Removed from favorites")
+      }
+    },
+    importPastes: (state, action) => {
+      const importedPastes = action.payload
+      state.pastes = [...state.pastes, ...importedPastes]
+      localStorage.setItem("pastes", JSON.stringify(state.pastes))
+      toast.success(`Imported ${importedPastes.length} pastes successfully!`)
+    },
   },
 })
 
-export const { addToPastes, removeFromPastes, updatePastes } = pasteSlice.actions
+export const { addToPastes, removeFromPastes, updatePastes, incrementViews, incrementShares, toggleFavorite, importPastes } = pasteSlice.actions
 
 export default pasteSlice.reducer
