@@ -1,13 +1,11 @@
 # PasteShare - Advanced Code Snippet Management System
 
-## 🎓 Final Year Project - BTech Computer Science Engineering
-
 **Project Title:** PasteShare - A Modern Web-Based Code Snippet Management and Sharing Platform
 
 **Developed By:** Priyansu Rathore  
 **GitHub:** https://github.com/PriyansuRathore  
 **Repository:** https://github.com/PriyansuRathore/PasteApp-react  
-**Year:** 2024
+**Year:** 2025
 
 ---
 
@@ -196,7 +194,7 @@ This project follows standard Git workflow:
 
 ## 📄 License
 
-This project is developed for educational purposes as part of BTech final year curriculum.
+This project is developed as a modern web application showcase.
 
 ## 🙏 Acknowledgments
 
