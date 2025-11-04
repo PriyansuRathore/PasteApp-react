@@ -1,4 +1,4 @@
-import { Copy, PlusCircle, Clock, Star, TrendingUp } from "lucide-react";
+import { Copy, PlusCircle, Clock, Star, TrendingUp, Lock, Unlock } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ const Home = () => {
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("code");
+  const [isPrivate, setIsPrivate] = useState(false);
   
   const categories = [
     { value: "code", label: "💻 Code", color: "text-blue-500" },
@@ -33,6 +34,7 @@ const Home = () => {
       title: title,
       content: value,
       category: category,
+      isPrivate: isPrivate,
       _id: pasteId || Date.now().toString(36) + Math.random().toString(36).substring(2),
       createdAt: new Date().toISOString(),
       isFavorite: false,
@@ -65,6 +67,8 @@ const Home = () => {
       if (paste) {
         setTitle(paste.title);
         setValue(paste.content);
+        setCategory(paste.category || "code");
+        setIsPrivate(paste.isPrivate || false);
       }
     }
   }, [pasteId, pastes]);
@@ -182,6 +186,21 @@ const Home = () => {
                 <option key={cat.value} value={cat.value}>{cat.label}</option>
               ))}
             </select>
+            
+            {/* Public/Private Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsPrivate(!isPrivate)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md border transition ${
+                isPrivate 
+                  ? 'bg-red-100 border-red-300 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-300'
+                  : 'bg-green-100 border-green-300 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-300'
+              }`}
+              title={isPrivate ? 'Private paste - only you can see it' : 'Public paste - anyone with link can see it'}
+            >
+              {isPrivate ? <Lock size={16} /> : <Unlock size={16} />}
+              {isPrivate ? 'Private' : 'Public'}
+            </button>
           </div>
 
           <div className="flex gap-3">

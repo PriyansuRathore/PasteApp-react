@@ -26,11 +26,30 @@ const Paste = ({ darkMode }) => {
   };
 
   const handleShare = (pasteId) => {
-    const pasteUrl = `${window.location.origin}/pastes/${pasteId}`;
+    console.log('Share clicked for paste:', pasteId);
+    const paste = pastes.find(p => p._id === pasteId);
+    console.log('Found paste:', paste);
+    
+    if (!paste) {
+      toast.error('Paste not found!');
+      return;
+    }
+    
+    const pasteData = btoa(unescape(encodeURIComponent(JSON.stringify(paste))));
+    const isLocalhost = window.location.hostname === 'localhost';
+    const baseUrl = isLocalhost ? window.location.origin.replace('localhost', '192.168.1.27') : window.location.origin;
+    const pasteUrl = `${baseUrl}/#/share/${pasteData}`;
+    
+    console.log('Generated share URL:', pasteUrl);
+    
     navigator.clipboard.writeText(pasteUrl);
-    setQrCodeId(pasteId); // ✅ Set QR Code for this paste
-    dispatch(incrementShares(pasteId)); // ✅ Track real shares
-    toast.success("Link copied to clipboard!");
+    setQrCodeId(pasteId);
+    dispatch(incrementShares(pasteId));
+    toast.success("Link copied to clipboard! QR code shown for 5 seconds.");
+    
+    setTimeout(() => {
+      setQrCodeId(null);
+    }, 5000);
   };
 
   const handleExport = () => {
@@ -54,7 +73,7 @@ const Paste = ({ darkMode }) => {
     dispatch(toggleFavorite(pasteId));
   };
 
-  // Enhanced filtering
+  // Enhanced filtering and sorting
   const filteredPastes = pastes.filter((paste) => {
     const matchesSearch = paste.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          paste.content.toLowerCase().includes(searchTerm.toLowerCase());
@@ -71,7 +90,7 @@ const Paste = ({ darkMode }) => {
       return matchesSearch && paste.category === filterType;
     }
     return matchesSearch;
-  });
+  }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by newest first
 
   return (
     <div className={`w-full min-h-screen ${darkMode ? 'bg-[#0F172A] text-white' : 'bg-white text-black'} flex justify-center`}>
@@ -152,8 +171,15 @@ const Paste = ({ darkMode }) => {
                   >
                     {/* ✅ QR Code (Top-Right Corner) */}
                     {qrCodeId === paste._id && (
-                      <div className="absolute top-2 right-2 bg-white p-2 rounded-md shadow-lg">
-                        <QRCode value={`${window.location.origin}/pastes/${paste._id}`} size={80} />
+                      <div className="absolute top-2 right-2 bg-white p-3 rounded-lg shadow-xl border-2 border-blue-200 z-10">
+                        <div className="text-xs text-gray-600 mb-1 text-center">Scan to share</div>
+                        <QRCode value={`${window.location.hostname === 'localhost' ? window.location.origin.replace('localhost', '192.168.1.27') : window.location.origin}/#/share/${btoa(unescape(encodeURIComponent(JSON.stringify(paste))))}`} size={100} />
+                        <button 
+                          onClick={() => setQrCodeId(null)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
                       </div>
                     )}
 

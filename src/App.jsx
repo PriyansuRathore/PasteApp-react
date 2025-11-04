@@ -26,6 +26,7 @@ function App() {
     { path: "/", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><Home darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
     { path: "/pastes", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><Paste darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
     { path: "/pastes/:id", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><ViewPaste darkMode={darkMode} /><Footer darkMode={darkMode} /></> },
+    { path: "/share/:data", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><ViewPaste darkMode={darkMode} isShared={true} /><Footer darkMode={darkMode} /></> },
     { path: "*", element: <><Navbar darkMode={darkMode} setDarkMode={setDarkMode} /><h1 className="text-center text-xl mt-10">Page Not Found</h1><Footer darkMode={darkMode} /></> } // Fallback route
   ]);
 
